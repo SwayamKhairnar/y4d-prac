@@ -109,6 +109,23 @@ class MediaCreate(BaseModel):
     file_type: Optional[str] = Field(None, max_length=100)
 
 
+class MediaCreateRequest(BaseModel):
+    object_key: str = Field(..., min_length=1, max_length=1024)
+    file_name: str = Field(..., min_length=1, max_length=255)
+    file_type: str = Field(..., min_length=1, max_length=100)
+
+    def model_post_init(self, __context: object) -> None:
+        allowed_prefixes = ("image/", "video/")
+        allowed_exact = {"application/pdf"}
+        if not (
+            self.file_type.startswith(allowed_prefixes)
+            or self.file_type in allowed_exact
+        ):
+            raise ValueError(
+                "file_type must be an image/*, video/*, or application/pdf media type"
+            )
+
+
 class MediaResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -118,3 +135,34 @@ class MediaResponse(BaseModel):
     file_name: Optional[str]
     file_type: Optional[str]
     created_at: datetime
+
+
+class MediaUploadUrlRequest(BaseModel):
+    file_name: str = Field(..., min_length=1, max_length=255)
+    file_type: str = Field(..., min_length=1, max_length=100)
+
+    def model_post_init(self, __context: object) -> None:
+        allowed_prefixes = ("image/", "video/")
+        allowed_exact = {"application/pdf"}
+        if not (
+            self.file_type.startswith(allowed_prefixes)
+            or self.file_type in allowed_exact
+        ):
+            raise ValueError(
+                "file_type must be an image/*, video/*, or application/pdf media type"
+            )
+
+
+class MediaUploadUrlResponse(BaseModel):
+    upload_url: str
+    object_key: str
+    file_name: str
+    file_type: str
+    expires_in: int
+
+
+class MediaDownloadUrlResponse(BaseModel):
+    download_url: str
+    file_name: str
+    file_type: str
+    expires_in: int

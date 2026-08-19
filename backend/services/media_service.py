@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 
 from core.exceptions import NotFoundError
 from models import Request, RequestMedia
-from schemas import MediaCreate
+from schemas import MediaCreate, MediaCreateRequest
 
 
 def add_media(
@@ -66,3 +66,35 @@ def get_media(db: Session, request_id: uuid.UUID) -> list[RequestMedia]:
         .order_by(RequestMedia.created_at.asc())
         .all()
     )
+
+
+def add_media_from_object_key(
+    db: Session, request_id: uuid.UUID, data: MediaCreateRequest
+) -> RequestMedia:
+    req = db.get(Request, request_id)
+    if req is None:
+        raise NotFoundError("Request", str(request_id))
+
+    media = RequestMedia(
+        request_id=request_id,
+        file_url=data.object_key,
+        file_name=data.file_name,
+        file_type=data.file_type,
+    )
+
+    try:
+        db.add(media)
+        db.commit()
+        db.refresh(media)
+    except Exception:
+        db.rollback()
+        raise
+
+    return media
+
+
+def get_media_item(db: Session, media_id: uuid.UUID) -> RequestMedia:
+    media = db.get(RequestMedia, media_id)
+    if media is None:
+        raise NotFoundError("Media", str(media_id))
+    return media
