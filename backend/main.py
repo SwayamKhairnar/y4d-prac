@@ -20,7 +20,7 @@ from sqlalchemy import text
 
 from core.exceptions import DuplicateError, NotFoundError
 from database import engine
-from routers import media, requests, users, volunteers
+from routers import media, media_downloads, requests, users, volunteers
 
 # ---------------------------------------------------------------------------
 # Application
@@ -68,6 +68,7 @@ async def duplicate_handler(request: Request, exc: DuplicateError) -> JSONRespon
 app.include_router(requests.router, prefix="/api/v1/requests", tags=["Requests"])
 app.include_router(volunteers.router, prefix="/api/v1/requests", tags=["Volunteers"])
 app.include_router(media.router, prefix="/api/v1/requests", tags=["Media"])
+app.include_router(media_downloads.router, prefix="/api/v1", tags=["Media"])
 app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])
 
 # ---------------------------------------------------------------------------
