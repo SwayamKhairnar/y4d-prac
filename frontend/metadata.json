@@ -1,0 +1,6 @@
+{
+  "name": "Y4D Help Hub",
+  "description": "Civic assistance and community mutual aid hub connecting neighbors to request and provide support.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
